@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
 import Swal from 'sweetalert2';
 
 import PaginationComponent from '@/components/PaginationComponent.vue';
@@ -72,7 +72,7 @@ export default {
     getOrders(page = 1) {
       const url = `${VITE_URL}/api/${VITE_PATH}/admin/orders?page=${page}`;
       this.isLoading = true;
-      axios
+      this.axios
         .get(url)
         .then((response) => {
           const { orders, pagination } = response.data;

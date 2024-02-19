@@ -33,7 +33,7 @@ const routes = [
         component: () => import('../views/admin/AdminProducts.vue'),
       },
       {
-        path: 'order',
+        path: 'orders',
         component: () => import('../views/admin/AdminOrder.vue'),
       },
     ],

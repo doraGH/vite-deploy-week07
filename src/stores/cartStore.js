@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
+// import axios from 'axios';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import Swal from 'sweetalert2';
 
@@ -25,7 +25,7 @@ export default defineStore('cartStore', {
           qty,
         },
       };
-      axios
+      this.axios
         .post(url, myCart)
         .then((response) => {
           // this.$refs.modal.hideModal();
@@ -41,7 +41,7 @@ export default defineStore('cartStore', {
     getCarts() {
       const url = `${VITE_URL}/api/${VITE_PATH}/cart`;
       this.isLoading = true;
-      axios
+      this.axios
         .get(url)
         .then((response) => {
           const { data } = response.data;
@@ -56,7 +56,7 @@ export default defineStore('cartStore', {
     removeCartItem(cartId) {
       const url = `${VITE_URL}/api/${VITE_PATH}/cart/${cartId}`;
       this.status.loadQty = cartId;
-      axios
+      this.axios
         .delete(url)
         .then((response) => {
           Swal.fire(response.data.message);
@@ -70,7 +70,7 @@ export default defineStore('cartStore', {
     // 刪除全部購物車
     deleteAllCarts() {
       const url = `${VITE_URL}/api/${VITE_PATH}/carts`;
-      axios
+      this.axios
         .delete(url)
         .then((response) => {
           this.getCarts();
@@ -90,7 +90,7 @@ export default defineStore('cartStore', {
         },
       };
       this.status.loadQty = data.id;
-      axios
+      this.axios
         .put(url, cart)
         .then((response) => {
           Swal.fire(response.data.message);

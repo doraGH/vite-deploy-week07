@@ -150,7 +150,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
 import Swal from 'sweetalert2';
 import { mapActions, mapState } from 'pinia';
 
@@ -207,7 +207,7 @@ export default {
       if (this.cartList.length === 0) {
         return;
       }
-      axios
+      this.axios
         .post(url, form)
         .then((response) => {
           Swal.fire(response.data.message);

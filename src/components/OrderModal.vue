@@ -154,7 +154,7 @@
 
 <script>
 import Modal from 'bootstrap/js/dist/modal';
-import axios from 'axios';
+// import axios from 'axios';
 import Swal from 'sweetalert2';
 
 const { VITE_URL, VITE_PATH } = import.meta.env;
@@ -194,7 +194,7 @@ export default {
         http = 'put';
       }
 
-      axios[http](url, this.editProduct)
+      this.axios[http](url, this.editProduct)
         .then((response) => {
           Swal.fire(response.data.message);
           this.bsProductModal.hide();
@@ -214,7 +214,7 @@ export default {
       const formData = new FormData(); // 產生一個form表單
       formData.append('file-to-upload', file); // 對應api 文件裡面表單的name, 並將檔案夾帶上去
 
-      axios
+      this.axios
         .post(`${VITE_URL}/api/${VITE_PATH}/admin/upload`, formData)
         .then((response) => {
           // console.log(response.data.imageUrl);

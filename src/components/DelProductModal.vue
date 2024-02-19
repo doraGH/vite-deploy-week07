@@ -33,7 +33,7 @@
 
 <script>
 import Modal from 'bootstrap/js/dist/modal';
-import axios from 'axios';
+// import axios from 'axios';
 import Swal from 'sweetalert2';
 
 const { VITE_URL, VITE_PATH } = import.meta.env;
@@ -55,7 +55,7 @@ export default {
   methods: {
     // 刪除單一產品
     deleteProduct() {
-      axios
+      this.axios
         .delete(
           `${VITE_URL}/api/${VITE_PATH}/admin/product/${this.tempProduct.data.id}`,
         )

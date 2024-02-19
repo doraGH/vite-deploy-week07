@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
+// import axios from 'axios';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import Swal from 'sweetalert2';
 
@@ -19,7 +19,7 @@ export default defineStore('productStore', {
     getProducts(page = 1) {
       const url = `${VITE_URL}/api/${VITE_PATH}/products?page=${page}`;
       this.isLoading = true;
-      axios
+      this.axios
         .get(url)
         .then((response) => {
           const { products, pagination } = response.data;
@@ -35,7 +35,7 @@ export default defineStore('productStore', {
     getProductItem(id) {
       const url = `${VITE_URL}/api/${VITE_PATH}/product/${id}`;
       this.loadItem = id;
-      axios
+      this.axios
         .get(url)
         .then((response) => {
           const { product } = response.data;

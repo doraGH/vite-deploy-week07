@@ -2,6 +2,9 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 
+import axios from 'axios';
+import VueAxios from 'vue-axios';
+
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/css/index.css';
 
@@ -16,6 +19,7 @@ import * as AllRules from '@vee-validate/rules';
 import { localize, setLocale } from '@vee-validate/i18n';
 import zhTW from '@vee-validate/i18n/dist/locale/zh_TW.json';
 
+import 'bootstrap';
 import './assets/all.scss';
 import router from './router';
 import App from './App.vue';
@@ -41,6 +45,7 @@ app.component('font-awesome-icon', FontAwesomeIcon);
 app.component('VField', Field);
 app.component('VForm', Form);
 app.component('ErrorMessage', ErrorMessage);
+app.use(VueAxios, axios);
 app.use(createPinia());
 app.use(router);
 

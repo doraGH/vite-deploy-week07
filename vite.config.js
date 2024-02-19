@@ -4,17 +4,11 @@ import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
-import eslintPlugin from 'vite-plugin-eslint';
-
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/vite-deploy-week07/',
+  base: process.env.NODE_ENV === 'production' ? '/vite-deploy-week07/' : '/',
   plugins: [
     vue(),
-    eslintPlugin({
-      include: ['src/**/*.js', 'src/**/*.vue', 'src/*.js', 'src/*.vue'],
-    }),
   ],
   resolve: {
     alias: {

@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
 import Swal from 'sweetalert2';
 
 import PaginationComponent from '@/components/PaginationComponent.vue';
@@ -102,14 +102,14 @@ export default {
   mounted() {
     // 取得cookie token
     const token = document.cookie.replace(/(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
-    axios.defaults.headers.common.Authorization = token;
+    this.axios.defaults.headers.common.Authorization = token;
     this.checkLogin();
   },
   methods: {
     // 確認登入狀態
     checkLogin() {
       const url = `${VITE_URL}/api/user/check`;
-      axios.post(url)
+      this.axios.post(url)
         .then(() => {
           this.getProducts();
         })
@@ -122,7 +122,7 @@ export default {
     getProducts(page = 1) {
       const url = `${VITE_URL}/api/${VITE_PATH}/admin/products?page=${page}`;
       this.isLoading = true;
-      axios.get(url)
+      this.axios.get(url)
         .then((response) => {
           const { products, pagination } = response.data;
           this.isLoading = false;
