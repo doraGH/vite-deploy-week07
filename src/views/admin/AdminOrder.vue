@@ -46,47 +46,28 @@
     </table>
     <!-- pagination 分頁 -->
     <PaginationComponent :pages="pagination" @change-page="getOrders"></PaginationComponent>
-
   </div>
 
+  <!-- 新增修改視窗 -->
+  <OrderModal
+    ref="orderModal"
+    :temp-order="tempOrder"
+    @edit-order="updateOrder">
+
+  </OrderModal>
   <!-- Modal 刪除彈跳視窗 -->
-  <div id="delOrderModal" ref="delOrderModal" class="modal fade" tabindex="-1"
-      aria-labelledby="delOrderModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content border-0">
-        <div class="modal-header bg-danger text-white">
-          <h5 id="delOrderModalLabel" class="modal-title">
-            <span>刪除產品</span>
-          </h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="modal-body">
-          是否刪除
-          <strong class="text-danger">{{ tempOrder.data.id }}</strong> 訂單(刪除後將無法恢復)。
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-            取消
-          </button>
-          <button type="button" class="btn btn-danger" @click="delOneOrder(tempOrder.data.id)">
-            確認刪除
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <DelModal
+  ref="delModal"
+  :item="tempOrder"
+  @del-item="delOneOrder"></DelModal>
 </template>
 
 <script>
 import Swal from 'sweetalert2';
-import Modal from 'bootstrap/js/dist/modal';
 
 import PaginationComponent from '@/components/PaginationComponent.vue';
+import OrderModal from '@/components/OrderModal.vue';
+import DelModal from '@/components/DelModal.vue';
 
 const { VITE_URL, VITE_PATH } = import.meta.env;
 
@@ -99,11 +80,12 @@ export default {
         data: {},
       },
       isLoading: false,
-      delModal: null,
     };
   },
   components: {
     PaginationComponent,
+    OrderModal,
+    DelModal,
   },
   methods: {
     // 取得訂單
@@ -117,7 +99,6 @@ export default {
           this.isLoading = false;
           this.orders = orders;
           this.pagination = pagination;
-          console.log(response);
         })
         .catch((error) => {
           Swal.fire(error.response.data.message);
@@ -130,25 +111,14 @@ export default {
       const thisTime = `${getTime.getFullYear()}/${getTime.getMonth() + 1}/${getTime.getDate()}`;
       return `${thisTime}`;
     },
-    // open bs modal 代值判斷傳入是哪一個
-    openOrderModal(status, item) {
-      // eslint-disable-next-line no-console
-      console.log(status, item);
-      if (status === 'edit') {
-        this.tempOrder.data = { ...item };
-        // this.openOrderModal();
-        // this.bsDelProductModal.show();
-      } else if (status === 'delete') {
-        this.tempOrder.data = { ...item };
-        this.delModal.show();
-      }
-    },
     // 取消單一訂單
-    delOneOrder(id) {
-      const url = `${VITE_URL}/api/${VITE_PATH}/admin/order/${id}`;
+    delOneOrder() {
+      const orderId = this.tempOrder.data.id;
+      const url = `${VITE_URL}/api/${VITE_PATH}/admin/order/${orderId}`;
       this.axios
-        .delete(url, id).then(() => {
-          this.delModal.hide();
+        .delete(url, orderId).then(() => {
+          this.$refs.delModal.closeModal();
+          this.getOrders();
         })
         .catch((error) => {
           Swal.fire(error.response.data.message);
@@ -166,16 +136,35 @@ export default {
           Swal.fire(error.response.data.message);
         });
     },
-    // bsModal show
-    openDelOrderModal() {
-      this.$refs.delProductModal.openModal();
+    // 修改訂單-待修
+    updateOrder() {
+      const orderId = this.tempOrder.data.id;
+      const url = `${VITE_URL}/api/${VITE_PATH}/admin/order/${orderId}`;
+      this.axios
+        .put(url, orderId).then(() => {
+          this.$refs.orderModal.closeModal();
+          this.getOrders();
+        })
+        .catch((error) => {
+          Swal.fire(error.response.data.message);
+        });
     },
+    // open bs modal 代值判斷傳入是哪一個
+    openOrderModal(status, item) {
+      if (status === 'edit') {
+        this.tempOrder.data = { ...item };
+        this.$refs.orderModal.openModal();
+      } else if (status === 'delete') {
+        this.tempOrder.data = { ...item };
+        this.$refs.delModal.openModal();
+      }
+    },
+    // bsModal show
+    // openDelOrderModal() {
+    //   this.$refs.delProductModal.openModal();
+    // },
   },
   mounted() {
-    this.delModal = new Modal(this.$refs.delOrderModal, {
-      backdrop: 'static',
-      keyboard: false,
-    });
     this.getOrders();
   },
 };

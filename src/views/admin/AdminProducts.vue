@@ -66,19 +66,18 @@
   </ProductModal>
 
   <!-- Modal 刪除彈跳視窗 -->
-  <DelProductModal
-  ref="delProductModal"
-  :temp-product="tempProduct"
-  @del-single="deleteProduct"></DelProductModal>
+  <DelModal
+  ref="delModal"
+  :item="tempProduct"
+  @del-item="deleteProduct"></DelModal>
 </template>
 
 <script>
-// import axios from 'axios';
 import Swal from 'sweetalert2';
 
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import ProductModal from '@/components/ProductModal.vue';
-import DelProductModal from '@/components/DelProductModal.vue';
+import DelModal from '@/components/DelModal.vue';
 
 const { VITE_URL, VITE_PATH } = import.meta.env;
 
@@ -97,7 +96,7 @@ export default {
   components: {
     PaginationComponent,
     ProductModal,
-    DelProductModal,
+    DelModal,
   },
   mounted() {
     // 取得cookie token
@@ -158,15 +157,13 @@ export default {
     },
 
     // 刪除單一產品
-    deleteProduct(id) {
+    deleteProduct() {
+      const url = `${VITE_URL}/api/${VITE_PATH}/admin/product/${this.tempProduct.data.id}`;
       this.axios
-        .delete(
-          `${VITE_URL}/api/${VITE_PATH}/admin/product/${id}`,
-        )
+        .delete(url)
         .then((response) => {
           Swal.fire(response.data.message);
-          // this.bsDelProductModal.hide();
-          this.$refs.delProductModal.closeModal();
+          this.$refs.delModal.closeModal();
           this.getProducts();
         })
         .catch((error) => {
@@ -179,7 +176,7 @@ export default {
       this.$refs.productModal.openModal();
     },
     openDelProductModalShow() {
-      this.$refs.delProductModal.openModal();
+      this.$refs.delModal.openModal();
     },
   },
 };

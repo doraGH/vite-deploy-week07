@@ -154,7 +154,6 @@
 
 <script>
 import Modal from 'bootstrap/js/dist/modal';
-// import axios from 'axios';
 import Swal from 'sweetalert2';
 
 const { VITE_URL, VITE_PATH } = import.meta.env;
