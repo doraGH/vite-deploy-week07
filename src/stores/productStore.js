@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-// import axios from 'axios';
+import axios from 'axios';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import Swal from 'sweetalert2';
 
@@ -19,7 +19,7 @@ export default defineStore('productStore', {
     getProducts(page = 1) {
       const url = `${VITE_URL}/api/${VITE_PATH}/products?page=${page}`;
       this.isLoading = true;
-      this.axios
+      axios
         .get(url)
         .then((response) => {
           const { products, pagination } = response.data;
@@ -28,14 +28,14 @@ export default defineStore('productStore', {
           this.pagination = pagination;
         })
         .catch((error) => {
-          Swal.fire(error.data.message);
+          Swal.fire(error.response.data.message);
         });
     },
     // 取得單一產品，並且要開起modal
     getProductItem(id) {
       const url = `${VITE_URL}/api/${VITE_PATH}/product/${id}`;
       this.loadItem = id;
-      this.axios
+      axios
         .get(url)
         .then((response) => {
           const { product } = response.data;
@@ -44,7 +44,7 @@ export default defineStore('productStore', {
           // this.$refs.modal.openModal();
         })
         .catch((error) => {
-          Swal.fire(error.data.message);
+          Swal.fire(error.response.data.message);
           // console.log(error);
         });
     },

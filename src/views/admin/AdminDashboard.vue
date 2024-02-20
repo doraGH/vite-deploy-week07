@@ -1,6 +1,6 @@
 <template>
   <NavbarLayout />
-  <div class="container-fluid my-5">
+  <div id="login-page" class="container-fluid">
     <RouterView></RouterView>
   </div>
 </template>

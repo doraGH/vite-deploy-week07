@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-// import axios from 'axios';
+import axios from 'axios';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import Swal from 'sweetalert2';
 
@@ -25,7 +25,7 @@ export default defineStore('cartStore', {
           qty,
         },
       };
-      this.axios
+      axios
         .post(url, myCart)
         .then((response) => {
           // this.$refs.modal.hideModal();
@@ -34,14 +34,14 @@ export default defineStore('cartStore', {
           Swal.fire(response.data.message);
         })
         .catch((error) => {
-          Swal.fire(error.data.message);
+          Swal.fire(error.response.data.message);
         });
     },
     // 取得購物車
     getCarts() {
       const url = `${VITE_URL}/api/${VITE_PATH}/cart`;
       this.isLoading = true;
-      this.axios
+      axios
         .get(url)
         .then((response) => {
           const { data } = response.data;
@@ -49,14 +49,14 @@ export default defineStore('cartStore', {
           this.cartList = data;
         })
         .catch((error) => {
-          Swal.fire(error.data.message);
+          Swal.fire(error.response.data.message);
         });
     },
     // 刪除單一購物車
     removeCartItem(cartId) {
       const url = `${VITE_URL}/api/${VITE_PATH}/cart/${cartId}`;
       this.status.loadQty = cartId;
-      this.axios
+      axios
         .delete(url)
         .then((response) => {
           Swal.fire(response.data.message);
@@ -64,20 +64,20 @@ export default defineStore('cartStore', {
           this.getCarts();
         })
         .catch((error) => {
-          Swal.fire(error.data.message);
+          Swal.fire(error.response.data.message);
         });
     },
     // 刪除全部購物車
     deleteAllCarts() {
       const url = `${VITE_URL}/api/${VITE_PATH}/carts`;
-      this.axios
+      axios
         .delete(url)
         .then((response) => {
           this.getCarts();
           Swal.fire(response.data.message);
         })
         .catch((error) => {
-          Swal.fire(error.data.message);
+          Swal.fire(error.response.data.message);
         });
     },
     // 更新購物車
@@ -90,7 +90,7 @@ export default defineStore('cartStore', {
         },
       };
       this.status.loadQty = data.id;
-      this.axios
+      axios
         .put(url, cart)
         .then((response) => {
           Swal.fire(response.data.message);
@@ -98,7 +98,7 @@ export default defineStore('cartStore', {
           this.getCarts();
         })
         .catch((error) => {
-          Swal.fire(error.data.message);
+          Swal.fire(error.response.data.message);
         });
     },
   },

@@ -69,7 +69,7 @@
   <DelProductModal
   ref="delProductModal"
   :temp-product="tempProduct"
-  @update-product="getProducts"></DelProductModal>
+  @del-single="deleteProduct"></DelProductModal>
 </template>
 
 <script>
@@ -135,6 +135,7 @@ export default {
     },
     // open bs modal 代值判斷傳入是哪一個
     openProductModal(status, item) {
+      console.log(status, item);
       if (status === 'createNew') {
         this.isNew = true;
         this.tempProduct.data = {};
@@ -154,6 +155,23 @@ export default {
         ...this.tempProduct,
         data: { ...this.tempProduct.data, ...updatedData },
       };
+    },
+
+    // 刪除單一產品
+    deleteProduct(id) {
+      this.axios
+        .delete(
+          `${VITE_URL}/api/${VITE_PATH}/admin/product/${id}`,
+        )
+        .then((response) => {
+          Swal.fire(response.data.message);
+          // this.bsDelProductModal.hide();
+          this.$refs.delProductModal.closeModal();
+          this.getProducts();
+        })
+        .catch((error) => {
+          Swal.fire(error.response.data.message);
+        });
     },
 
     // bsModal show

@@ -22,7 +22,7 @@
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
             取消
           </button>
-          <button type="button" class="btn btn-danger" @click="deleteProduct">
+          <button type="button" class="btn btn-danger" @click="delSingle(tempProduct.data.id)">
             確認刪除
           </button>
         </div>
@@ -33,13 +33,9 @@
 
 <script>
 import Modal from 'bootstrap/js/dist/modal';
-// import axios from 'axios';
-import Swal from 'sweetalert2';
-
-const { VITE_URL, VITE_PATH } = import.meta.env;
 
 export default {
-  props: ['tempProduct'],
+  props: ['tempProduct', 'deleteProduct'],
   data() {
     return {
       bsDelProductModal: null,
@@ -53,24 +49,16 @@ export default {
     });
   },
   methods: {
-    // 刪除單一產品
-    deleteProduct() {
-      this.axios
-        .delete(
-          `${VITE_URL}/api/${VITE_PATH}/admin/product/${this.tempProduct.data.id}`,
-        )
-        .then((response) => {
-          Swal.fire(response.data.message);
-          this.bsDelProductModal.hide();
-          this.$emit('updateProduct');
-        })
-        .catch((error) => {
-          Swal.fire(error.response.data.message);
-        });
+    delSingle(id) {
+      console.log(id); // 測試點擊是否有作用
+      this.$emit('delSingle', id);
     },
     // 打開modal
     openModal() {
       this.bsDelProductModal.show();
+    },
+    closeModal() {
+      this.bsDelProductModal.hide();
     },
   },
 };

@@ -25,6 +25,9 @@
           <li class="nav-item">
             <RouterLink to="/login" class="nav-link">登入頁</RouterLink>
           </li>
+          <li class="nav-item">
+            <RouterLink to="/admin/orders" class="nav-link">後單訂單頁</RouterLink>
+          </li>
         </ul>
       </div>
     </div>
