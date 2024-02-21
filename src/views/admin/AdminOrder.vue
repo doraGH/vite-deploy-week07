@@ -32,7 +32,7 @@
               <div class="btn-group">
                 <button type="button" class="btn btn-outline-primary btn-sm"
                 @click.prevent="openOrderModal('edit', item)">
-                <font-awesome-icon :icon="['fas', 'eye']" /> 編輯
+                <font-awesome-icon :icon="['fas', 'eye']" /> 修改
                 </button>
                 <button type="button" class="btn btn-outline-danger btn-sm"
                 @click.prevent="openOrderModal('delete', item)">
@@ -52,7 +52,7 @@
   <OrderModal
     ref="orderModal"
     :temp-order="tempOrder"
-    @edit-order="updateOrder">
+    @update-order="getOrders">
 
   </OrderModal>
   <!-- Modal 刪除彈跳視窗 -->
@@ -108,8 +108,9 @@ export default {
     // 組合時間
     formatDate(timestamp) {
       const getTime = new Date(timestamp * 1000);
-      const thisTime = `${getTime.getFullYear()}/${getTime.getMonth() + 1}/${getTime.getDate()}`;
-      return `${thisTime}`;
+      // const thisTime = `${getTime.getFullYear()}/${getTime.getMonth() + 1}/${getTime.getDate()}`;
+      // return `${thisTime}`;
+      return getTime.toLocaleDateString();
     },
     // 取消單一訂單
     delOneOrder() {
@@ -130,19 +131,6 @@ export default {
       this.axios
         .delete(url).then((response) => {
           Swal.fire(response.data.message);
-          this.getOrders();
-        })
-        .catch((error) => {
-          Swal.fire(error.response.data.message);
-        });
-    },
-    // 修改訂單-待修
-    updateOrder() {
-      const orderId = this.tempOrder.data.id;
-      const url = `${VITE_URL}/api/${VITE_PATH}/admin/order/${orderId}`;
-      this.axios
-        .put(url, orderId).then(() => {
-          this.$refs.orderModal.closeModal();
           this.getOrders();
         })
         .catch((error) => {

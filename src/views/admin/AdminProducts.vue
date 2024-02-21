@@ -134,7 +134,6 @@ export default {
     },
     // open bs modal 代值判斷傳入是哪一個
     openProductModal(status, item) {
-      console.log(status, item);
       if (status === 'createNew') {
         this.isNew = true;
         this.tempProduct.data = {};

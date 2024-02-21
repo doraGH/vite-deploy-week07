@@ -30,7 +30,7 @@
               </tr>
               <tr>
                 <th>訂單日期</th>
-                <td>{{ tempOrder.data.create_at }}</td>
+                <td>{{ formatDate(tempOrder.data.create_at) }}</td>
               </tr>
               <tr>
                 <th>付款狀態</th>
@@ -50,9 +50,20 @@
 
           <h6>選購商品</h6>
           <table class="table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>圖片</th>
+                <th>品名</th>
+                <th style="width: 150px">數量/單位</th>
+                <th class="text-end">單價</th>
+              </tr>
+            </thead>
             <tbody>
               <tr v-for="item in tempOrder.data.products" :key="item.id">
-                <th>{{ item.product.title }}</th>
+                <td>x</td>
+                <td><img class="img-cart" :src="item.product.imageUrl" alt=""></td>
+                <td>{{ item.product.title }}</td>
                 <td>{{ item.qty }} / {{ item.product.unit }}</td>
                 <td class="text-end">
                   $ {{ item.final_total }}
@@ -62,8 +73,18 @@
           </table>
 
           <h6>用戶資料</h6>
+          <template v-if="tempOrder.data.user">
+            <div class="mb-3 row">
+              <label for="name" class="form-label col-sm-2">姓名</label>
+              <div class="col-sm-10">
+                <input id="name" type="text" class="form-control" placeholder="請輸入標題"
+                v-model="editOrder.data.user.name">
+              </div>
+            </div>
+          </template>
+
           <table class="table">
-            <tbody>
+            <tbody v-if="tempOrder.data.user">
               <tr>
                 <td>姓名</td>
                 <td>{{ tempOrder.data.user.name }}</td>
@@ -82,21 +103,24 @@
               </tr>
             </tbody>
           </table>
-          <!-- <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"
-              v-model="this.isPaid" />
-            <label class="form-check-label" for="flexCheckDefault">
+          <div class="form-check">
+            <input class="form-check-input"
+            type="checkbox"
+            id="is_paid"
+            v-model="editOrder.data.is_paid" :true-value="true" :false-value="false" />
+            <label class="form-check-label" for="is_paid">
+              <!-- 是否付款 -->
               <span v-if="tempOrder.data.is_paid" class="text-success">已付款</span>
               <span v-else class="text-muted">未付款</span>
             </label>
-          </div> -->
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
             取消
           </button>
           <button type="button" class="btn btn-primary"
-          @click.prevent="$emit('edit-order')"> <!-- 待修 -->
+          @click.prevent="updateOrder">
             確認
           </button>
         </div>
@@ -107,18 +131,20 @@
 
 <script>
 import Modal from 'bootstrap/js/dist/modal';
-// import Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 
-// const { VITE_URL, VITE_PATH } = import.meta.env;
+const { VITE_URL, VITE_PATH } = import.meta.env;
 
 export default {
-  props: ['tempOrder'],
+  props: ['tempOrder', 'getOrders'],
   emit: ['edit-order'],
   data() {
     return {
       bsModal: null,
-      editOrder: {},
-      isPaid: false,
+      editOrder: {
+        data: {},
+      }, // 有修改內容資料時向外傳遞使用
+      // isPaid: false,
     };
   },
   mounted() {
@@ -127,36 +153,44 @@ export default {
       backdrop: 'static',
       keyboard: false,
     });
-    this.editOrder = this.tempOrder;
+    this.editOrder = this.tempOrder; // 傳參考
   },
   methods: {
-    // 更新產品資料
-    // updateProduct() {
-    //   const url = `${VITE_URL}/api/${VITE_PATH}/admin/order/${this.editOrder.data.id}`;
+    // 修改訂單-待修
+    updateOrder() {
+      const orderId = this.editOrder.data.id;
+      const url = `${VITE_URL}/api/${VITE_PATH}/admin/order/${orderId}`;
+      this.axios
+        .put(url, this.editOrder).then((response) => {
+          Swal.fire(response.data.message);
+          this.bsModal.hide();
+          // this.getOrders();
+          this.$emit('updateOrder');
+        })
+        .catch((error) => {
+          const errorMessage = Array.isArray(error.response.data.message)
+            ? error.response.data.message.join('\n')
+            : error.response.data.message;
+          Swal.fire(errorMessage);
+        });
+    },
+    // 組合時間
+    formatDate(timestamp) {
+      const getTime = new Date(timestamp * 1000);
+      return getTime.toLocaleDateString();
+    },
 
-    //   this.axios.put(url, this.editOrder)
-    //     .then((response) => {
-    //       Swal.fire(response.data.message);
-    //       this.bsModal.hide();
-    //       this.$emit('updateProduct');
-    //     })
-    //     .catch((error) => {
-    //       const errorMessage = Array.isArray(error.response.data.message)
-    //         ? error.response.data.message.join('\n')
-    //         : error.response.data.message;
-    //       Swal.fire(errorMessage);
-    //     });
-    // },
-
-    // 打開modal
+    // 打開 modal
     openModal() {
       this.bsModal.show();
     },
+    // 關閉 modal
     closeModal() {
       this.bsModal.hide();
     },
   },
   watch: {
+    // 監聽值是否有變化
     tempOrder() {
       this.editOrder = this.tempOrder;
     },
