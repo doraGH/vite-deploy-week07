@@ -2,7 +2,7 @@
   <div
     class="modal fade"
     id="orderModal"
-    ref="orderModal"
+    ref="modal"
     tabindex="-1"
     aria-labelledby="orderModallLabel"
     aria-hidden="true"
@@ -35,8 +35,19 @@
               <tr>
                 <th>付款狀態</th>
                 <td>
-                  <strong v-if="tempOrder.data.is_paid" class="text-success">已付款</strong>
-                  <span v-else class="text-muted">尚未付款</span>
+                  <!-- <strong v-if="tempOrder.data.is_paid" class="text-success">已付款</strong>
+                  <span v-else class="text-muted">尚未付款</span> -->
+                  <div class="form-check">
+                    <input class="form-check-input"
+                    type="checkbox"
+                    id="is_paid"
+                    v-model="editOrder.data.is_paid" :true-value="true" :false-value="false" />
+                    <label class="form-check-label" for="is_paid">
+                      <!-- 是否付款 -->
+                      <span v-if="tempOrder.data.is_paid" class="text-success">已付款</span>
+                      <span v-else class="text-muted">未付款</span>
+                    </label>
+                  </div>
                 </td>
               </tr>
               <tr>
@@ -52,7 +63,6 @@
           <table class="table">
             <thead>
               <tr>
-                <th></th>
                 <th>圖片</th>
                 <th>品名</th>
                 <th style="width: 150px">數量/單位</th>
@@ -61,10 +71,11 @@
             </thead>
             <tbody>
               <tr v-for="item in tempOrder.data.products" :key="item.id">
-                <td>x</td>
                 <td><img class="img-cart" :src="item.product.imageUrl" alt=""></td>
                 <td>{{ item.product.title }}</td>
-                <td>{{ item.qty }} / {{ item.product.unit }}</td>
+                <td>
+                  {{ item.qty }} / {{ item.product.unit }}
+                </td>
                 <td class="text-end">
                   $ {{ item.final_total }}
                 </td>
@@ -73,16 +84,6 @@
           </table>
 
           <h6>用戶資料</h6>
-          <template v-if="tempOrder.data.user">
-            <div class="mb-3 row">
-              <label for="name" class="form-label col-sm-2">姓名</label>
-              <div class="col-sm-10">
-                <input id="name" type="text" class="form-control" placeholder="請輸入標題"
-                v-model="editOrder.data.user.name">
-              </div>
-            </div>
-          </template>
-
           <table class="table">
             <tbody v-if="tempOrder.data.user">
               <tr>
@@ -99,21 +100,13 @@
               </tr>
               <tr>
                 <td>地址</td>
-                <td>{{ tempOrder.data.user.address }}</td>
+                <td>
+                  <input id="address" type="text" class="form-control" placeholder="請輸入地址"
+                v-model="editOrder.data.user.address">
+                </td>
               </tr>
             </tbody>
           </table>
-          <div class="form-check">
-            <input class="form-check-input"
-            type="checkbox"
-            id="is_paid"
-            v-model="editOrder.data.is_paid" :true-value="true" :false-value="false" />
-            <label class="form-check-label" for="is_paid">
-              <!-- 是否付款 -->
-              <span v-if="tempOrder.data.is_paid" class="text-success">已付款</span>
-              <span v-else class="text-muted">未付款</span>
-            </label>
-          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
@@ -130,7 +123,7 @@
 </template>
 
 <script>
-import Modal from 'bootstrap/js/dist/modal';
+import modalMixin from '@/mixins/modalMixin';
 import Swal from 'sweetalert2';
 
 const { VITE_URL, VITE_PATH } = import.meta.env;
@@ -138,9 +131,9 @@ const { VITE_URL, VITE_PATH } = import.meta.env;
 export default {
   props: ['tempOrder', 'getOrders'],
   emit: ['edit-order'],
+  mixins: [modalMixin],
   data() {
     return {
-      bsModal: null,
       editOrder: {
         data: {},
       }, // 有修改內容資料時向外傳遞使用
@@ -148,11 +141,6 @@ export default {
     };
   },
   mounted() {
-    // bs modal 實體化
-    this.bsModal = new Modal(this.$refs.orderModal, {
-      backdrop: 'static',
-      keyboard: false,
-    });
     this.editOrder = this.tempOrder; // 傳參考
   },
   methods: {
@@ -163,8 +151,7 @@ export default {
       this.axios
         .put(url, this.editOrder).then((response) => {
           Swal.fire(response.data.message);
-          this.bsModal.hide();
-          // this.getOrders();
+          this.modal.hide();
           this.$emit('updateOrder');
         })
         .catch((error) => {
@@ -178,15 +165,6 @@ export default {
     formatDate(timestamp) {
       const getTime = new Date(timestamp * 1000);
       return getTime.toLocaleDateString();
-    },
-
-    // 打開 modal
-    openModal() {
-      this.bsModal.show();
-    },
-    // 關閉 modal
-    closeModal() {
-      this.bsModal.hide();
     },
   },
   watch: {

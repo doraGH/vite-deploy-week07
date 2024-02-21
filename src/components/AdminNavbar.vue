@@ -33,15 +33,19 @@ import Swal from 'sweetalert2';
 
 const { VITE_URL } = import.meta.env;
 export default {
-  // 登出
-  logout() {
-    this.axios.post(`${VITE_URL}/logout`)
-      .then(() => {
-        this.$router.push('/');
-      })
-      .catch((error) => {
-        Swal.fire(error.response.statusText);
-      });
+  methods: {
+    // 登出
+    logout() {
+      this.axios.post(`${VITE_URL}/logout`)
+        .then(() => {
+          Swal.fire('您已成功登出');
+          document.cookie = 'hexToken=; expires=; path=/';
+          this.$router.push('/login');
+        })
+        .catch((error) => {
+          Swal.fire(error.response.data.message);
+        });
+    },
   },
 };
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div
     id="productModal"
-    ref="productModal"
+    ref="modal"
     class="modal fade"
     tabindex="-1"
     aria-labelledby="productModalLabel"
@@ -153,27 +153,22 @@
 </template>
 
 <script>
-import Modal from 'bootstrap/js/dist/modal';
+import modalMixin from '@/mixins/modalMixin';
 import Swal from 'sweetalert2';
 
 const { VITE_URL, VITE_PATH } = import.meta.env;
 
 export default {
   props: ['isNew', 'tempProduct'],
+  mixins: [modalMixin],
   data() {
     return {
-      bsProductModal: null,
       editProduct: {
         data: {},
       },
     };
   },
   mounted() {
-    // bs modal 實體化
-    this.bsProductModal = new Modal(this.$refs.productModal, {
-      backdrop: 'static',
-      keyboard: false,
-    });
     this.editProduct = this.tempProduct;
   },
   methods: {
@@ -196,7 +191,7 @@ export default {
       this.axios[http](url, this.editProduct)
         .then((response) => {
           Swal.fire(response.data.message);
-          this.bsProductModal.hide();
+          this.modal.hide();
           this.$emit('updateProduct');
         })
         .catch((error) => {
@@ -228,10 +223,6 @@ export default {
         });
     },
 
-    // 打開modal
-    openModal() {
-      this.bsProductModal.show();
-    },
   },
   watch: {
     tempProduct() {

@@ -118,7 +118,7 @@ export default {
       const url = `${VITE_URL}/api/${VITE_PATH}/admin/order/${orderId}`;
       this.axios
         .delete(url, orderId).then(() => {
-          this.$refs.delModal.closeModal();
+          this.$refs.delModal.hideModal();
           this.getOrders();
         })
         .catch((error) => {

@@ -22,21 +22,40 @@ const routes = [
   },
   {
     path: '/login',
+    name: '登入頁',
     component: () => import('../views/LoginView.vue'),
   },
   {
     path: '/admin',
+    name: '後台首頁',
     component: () => import('../views/admin/AdminDashboard.vue'),
     children: [
       {
         path: 'products',
+        name: '後台產品列表',
         component: () => import('../views/admin/AdminProducts.vue'),
       },
       {
         path: 'orders',
+        name: '訂單列表',
         component: () => import('../views/admin/AdminOrder.vue'),
       },
+      {
+        path: 'coupons',
+        name: '優惠券',
+        component: () => import('../views/admin/AdminCoupons.vue'),
+      },
+      {
+        path: 'article',
+        name: '文章列表',
+        component: () => import('../views/admin/AdminArticle.vue'),
+      },
     ],
+  },
+  // 404 頁面
+  {
+    path: '/admin/:pathMatch(.*)*',
+    component: () => import('../views/NotFound.vue'),
   },
 ];
 

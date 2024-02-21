@@ -1,5 +1,5 @@
 <template>
-  <div class="modal fade" id="delModal" ref="delModal" tabindex="-1"
+  <div class="modal fade" id="delModal" ref="modal" tabindex="-1"
       aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content border-0">
@@ -33,33 +33,13 @@
 </template>
 
 <script>
-import Modal from 'bootstrap/js/dist/modal';
+import modalMixin from '@/mixins/modalMixin';
 
 export default {
   props: {
     item: Object,
   },
   emits: ['del-item'],
-  data() {
-    return {
-      modal: null,
-    };
-  },
-  mounted() {
-    // bs modal 實體化
-    this.modal = new Modal(this.$refs.delModal, {
-      backdrop: 'static',
-      keyboard: false,
-    });
-  },
-  methods: {
-    // 打開modal
-    openModal() {
-      this.modal.show();
-    },
-    closeModal() {
-      this.modal.hide();
-    },
-  },
+  mixins: [modalMixin],
 };
 </script>

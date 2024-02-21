@@ -46,7 +46,7 @@ export default {
         .post(url, this.user)
         .then((response) => {
           const { expired, token } = response.data;
-          document.cookie = `hexToken=${token}; expires=${new Date(expired)}`;
+          document.cookie = `hexToken=${token}; expires=${new Date(expired)}; path=/`;
           this.$router.push('/admin/products');
         })
         .catch((error) => {
