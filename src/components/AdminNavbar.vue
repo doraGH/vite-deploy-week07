@@ -42,8 +42,10 @@ export default {
           document.cookie = 'hexToken=; expires=; path=/';
           this.$router.push('/login');
         })
-        .catch((error) => {
-          Swal.fire(error.response.data.message);
+        .catch(() => {
+          // Swal.fire(error.response.data.message);
+          Swal.fire('請重新登入');
+          this.$router.push('/login');
         });
     },
   },

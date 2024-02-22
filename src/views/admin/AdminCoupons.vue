@@ -10,31 +10,33 @@
     <table class="table mt-4">
       <thead>
         <tr>
-          <th width="120">名稱</th>
+          <th>名稱</th>
           <th>折扣百分比</th>
-          <th width="120" class="text-center">到期日</th>
-          <th width="120" class="text-center">是否啟用</th>
-          <th width="120" class="text-center">編輯</th>
+          <th>到期日</th>
+          <th>是否啟用</th>
+          <th>編輯</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="item in coupons" :key="item.id">
           <td>{{ item.title }}</td>
           <td>{{ item.percent }}</td>
-          <td>{{ item.due_date }}</td>
+          <td>{{ formatDate(item.due_date) }}</td>
           <td>
             <span :class="{'text-success': item.is_enabled}">
               {{ item.is_enabled ? '啟用' : '未啟用'}}</span>
           </td>
           <td>
-            <button type="button" class="btn btn-outline-primary btn-sm"
-              @click.prevent="openCouponModal('edit', item)">
-                編輯
+            <div class="btn-group">
+              <button type="button" class="btn btn-outline-primary btn-sm"
+                @click.prevent="openCouponModal('edit', item)">
+                  編輯
+                </button>
+              <button type="button" class="btn btn-outline-danger btn-sm"
+              @click.prevent="openCouponModal('delete', item)">
+                刪除
               </button>
-            <button type="button" class="btn btn-outline-danger btn-sm"
-            @click.prevent="openCouponModal('delete', item)">
-              刪除
-            </button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -46,7 +48,7 @@
   <CouponModal
     ref="couponModal"
     :temp-coupon="tempCoupon"
-    @update-coupon="getCoupons">
+    @update-coupon="updateCoupons">
   </CouponModal>
 
   <!-- Modal 刪除視窗 -->
@@ -98,12 +100,18 @@ export default {
         this.$refs.delModal.openModal();
       }
     },
+    // 組合時間
+    formatDate(timestamp) {
+      const getTime = new Date(timestamp * 1000);
+      return getTime.toISOString().slice(0, 10);
+    },
     // 取得列表
     getCoupons() {
       const url = `${VITE_URL}/api/${VITE_PATH}/admin/coupons`;
       this.isLoading = true;
       this.axios.get(url)
         .then((response) => {
+          console.log(response);
           const { coupons, pagination } = response.data;
           this.isLoading = false;
           this.coupons = coupons;
@@ -112,6 +120,7 @@ export default {
         .catch((error) => {
           this.isLoading = false;
           Swal.fire(error.response.data.message);
+          this.$router.push('/login');
         });
     },
     // 刪除優惠券
@@ -119,10 +128,37 @@ export default {
       const url = `${VITE_URL}/api/${VITE_PATH}/admin/coupon/${this.tempCoupon.data.id}`;
       this.axios.delete(url)
         .then((response) => {
-          console.log(response);
+          Swal.fire(response.data.message);
+          this.$refs.delModal.hideModal();
+          this.getCoupons();
         })
         .catch((error) => {
-          console.log(error);
+          Swal.fire(error.response.data.message);
+        });
+    },
+    // 更新優惠券
+    updateCoupons(item) {
+      // this.isLoading = true;
+      let url = `${VITE_URL}/api/${VITE_PATH}/admin/coupon`;
+      let http = 'post';
+
+      // 不是isNew則為新增
+      if (!this.isNew) {
+        url = `${VITE_URL}/api/${VITE_PATH}/admin/coupon/${this.tempCoupon.data.id}`;
+        http = 'put';
+      }
+
+      this.axios[http](url, item)
+        .then((response) => {
+          Swal.fire(response.data.message);
+          this.$refs.couponModal.hideModal();
+          this.getCoupons();
+        })
+        .catch((error) => {
+          const errorMessage = Array.isArray(error.response.data.message)
+            ? error.response.data.message.join('\n')
+            : error.response.data.message;
+          Swal.fire(errorMessage);
         });
     },
 
