@@ -44,8 +44,8 @@
 import { mapActions, mapState } from 'pinia';
 import productStore from '@/stores/productStore';
 import cartStore from '@/stores/cartStore';
-import ShowProductModal from '../components/ShowProductModal.vue';
-import PaginationComponent from '../components/PaginationComponent.vue';
+import ShowProductModal from '../../components/ShowProductModal.vue';
+import PaginationComponent from '../../components/PaginationComponent.vue';
 
 export default {
   data() {

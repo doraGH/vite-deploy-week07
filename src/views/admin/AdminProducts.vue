@@ -88,12 +88,6 @@ export default {
     ProductModal,
     DelModal,
   },
-  mounted() {
-    // 取得cookie token
-    const token = document.cookie.replace(/(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
-    this.axios.defaults.headers.common.Authorization = token;
-    this.checkLogin();
-  },
   methods: {
     // 確認登入狀態
     checkLogin() {
@@ -167,6 +161,12 @@ export default {
     openDelProductModalShow() {
       this.$refs.delModal.openModal();
     },
+  },
+  mounted() {
+    // 取得cookie token
+    const token = document.cookie.replace(/(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+    this.axios.defaults.headers.common.Authorization = token;
+    this.checkLogin();
   },
 };
 </script>

@@ -4,7 +4,9 @@
     <div class="d-flex justify-content-between mt-4">
       <h2>訂單列表</h2>
       <div class="text-end">
-      <button class="btn btn-outline-danger" type="button" @click="delAllOrder">清空訂單</button>
+      <button class="btn btn-outline-danger" type="button"
+      :class="{'disabled': orders.length === 0}"
+      @click="delAllOrder">清空訂單</button>
       </div>
     </div>
 
@@ -53,8 +55,8 @@
     ref="orderModal"
     :temp-order="tempOrder"
     @update-order="getOrders">
-
   </OrderModal>
+
   <!-- Modal 刪除彈跳視窗 -->
   <DelModal
   ref="delModal"

@@ -8,6 +8,7 @@
         <div class="text-end">
           <button class="btn btn-outline-danger"
           type="button"
+          :class="{'disabled': cartList.carts.length === 0}"
           @click="fetchDeleteAllCarts">清空購物車</button>
         </div>
         <div v-if="cartList.carts && cartList.carts.length > 0" class="bg-light my-4 p-4">
@@ -116,7 +117,8 @@
           </div>
           <div class="mb-3">
             <label for="tel" class="form-label">收件人電話</label>
-            <VField type="text" class="form-control" id="tel" name="tel" placeholder="請輸入電話"
+            <VField type="text" class="form-control" id="tel" name="tel"
+            placeholder="請輸入電話: 09xxxxxxxxx"
               :class="{'is-invalid':errors['tel']}"
               :rules="isPhone"
               v-model="form.data.user.tel" />
@@ -212,6 +214,7 @@ export default {
         .then((response) => {
           Swal.fire(response.data.message);
           this.$refs.form.resetForm();
+          this.form.data.message = '';
           this.getCarts();
         })
         .catch((error) => {

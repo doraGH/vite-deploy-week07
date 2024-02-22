@@ -21,7 +21,7 @@
         </div>
         <div class="navbar-nav ms-auto">
           <RouterLink to="/user/articles" class="nav-link">Blog</RouterLink>
-          <RouterLink to="/user/cart" class="nav-link">購物車</RouterLink>
+          <RouterLink to="/cart" class="nav-link">購物車</RouterLink>
           <RouterLink to="/" class="nav-link">返回前台</RouterLink>
         </div>
       </div>
