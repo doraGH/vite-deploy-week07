@@ -149,12 +149,11 @@ export default {
         this.$refs.delModal.openModal();
       }
     },
-    // bsModal show
-    // openDelOrderModal() {
-    //   this.$refs.delProductModal.openModal();
-    // },
   },
   mounted() {
+    // 取得cookie token
+    const token = document.cookie.replace(/(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+    this.axios.defaults.headers.common.Authorization = token;
     this.getOrders();
   },
 };

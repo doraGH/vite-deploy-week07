@@ -20,11 +20,11 @@
       <tbody>
         <tr v-for="item in coupons" :key="item.id">
           <td>{{ item.title }}</td>
-          <td>{{ item.percent }}</td>
+          <td>{{ item.percent }}%</td>
           <td>{{ formatDate(item.due_date) }}</td>
           <td>
-            <span :class="{'text-success': item.is_enabled}">
-              {{ item.is_enabled ? '啟用' : '未啟用'}}</span>
+            <span v-if="item.is_enabled === 1" class="text-success">啟用</span>
+            <span v-else class="text-muted">未啟用</span>
           </td>
           <td>
             <div class="btn-group">
@@ -47,6 +47,7 @@
   <!-- 新增視窗 -->
   <CouponModal
     ref="couponModal"
+    :is-new="isNew"
     :temp-coupon="tempCoupon"
     @update-coupon="updateCoupons">
   </CouponModal>
@@ -89,7 +90,10 @@ export default {
     openCouponModal(status, item) {
       if (status === 'createNew') {
         this.isNew = true;
-        this.tempCoupon.data = {};
+        this.tempCoupon.data = {
+          due_date: new Date().getTime() / 1000,
+          is_enabled: 0,
+        };
         this.$refs.couponModal.openModal();
       } else if (status === 'edit') {
         this.isNew = false;
@@ -103,7 +107,7 @@ export default {
     // 組合時間
     formatDate(timestamp) {
       const getTime = new Date(timestamp * 1000);
-      return getTime.toISOString().slice(0, 10);
+      return getTime.toLocaleDateString();
     },
     // 取得列表
     getCoupons() {
@@ -111,7 +115,6 @@ export default {
       this.isLoading = true;
       this.axios.get(url)
         .then((response) => {
-          console.log(response);
           const { coupons, pagination } = response.data;
           this.isLoading = false;
           this.coupons = coupons;
@@ -120,7 +123,6 @@ export default {
         .catch((error) => {
           this.isLoading = false;
           Swal.fire(error.response.data.message);
-          this.$router.push('/login');
         });
     },
     // 刪除優惠券
@@ -141,29 +143,36 @@ export default {
       // this.isLoading = true;
       let url = `${VITE_URL}/api/${VITE_PATH}/admin/coupon`;
       let http = 'post';
-
+      // let data = item;
+      console.log(item);
       // 不是isNew則為新增
       if (!this.isNew) {
         url = `${VITE_URL}/api/${VITE_PATH}/admin/coupon/${this.tempCoupon.data.id}`;
         http = 'put';
+        // data = this.tempCoupon;
       }
 
       this.axios[http](url, item)
         .then((response) => {
           Swal.fire(response.data.message);
-          this.$refs.couponModal.hideModal();
           this.getCoupons();
+          this.$refs.couponModal.hideModal();
+          // console.log(response);
         })
         .catch((error) => {
           const errorMessage = Array.isArray(error.response.data.message)
             ? error.response.data.message.join('\n')
             : error.response.data.message;
           Swal.fire(errorMessage);
+          // console.log(error);
         });
     },
 
   },
   mounted() {
+    // 取得cookie token
+    const token = document.cookie.replace(/(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+    this.axios.defaults.headers.common.Authorization = token;
     this.getCoupons();
   },
 };

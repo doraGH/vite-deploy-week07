@@ -11,7 +11,6 @@
       <div class="modal-content">
         <div class="modal-header bg-dark text-white">
           <h5 class="modal-title" id="couponModalLabel">
-            <!-- <span v-if="isNew">新增優惠卷</span> -->
             <span v-if="isNew">新增優惠卷</span>
             <span v-else>編輯優惠卷</span>
           </h5>
@@ -22,7 +21,6 @@
             aria-label="Close"
           ></button>
         </div>
-        <!-- <div class="modal-body">123</div> -->
         <div class="modal-body">
           <div class="mb-3">
             <label for="title">標題</label>
@@ -37,13 +35,12 @@
           </div>
           <div class="mb-3">
             <label for="due_date">到期日</label>
-            <input id="due_date" type="date" class="form-control"
-            placeholder="請輸入優惠碼" v-model="editCoupon.data.due_date">
+            <input id="due_date" type="date" class="form-control" v-model="due_date">
           </div>
           <div class="mb-3">
             <label for="percent">折扣百分比</label>
-            <input id="percent" type="number" class="form-control"
-            placeholder="請輸入折扣百分比" v-model="editCoupon.data.percent">
+            <input id="percent" type="number" class="form-control" min="0"
+            placeholder="請輸入折扣百分比" v-model.number="editCoupon.data.percent">
           </div>
           <div class="mb-3">
             <div class="form-check">
@@ -84,14 +81,29 @@ export default {
       editCoupon: {
         data: {},
       },
+      due_date: '',
     };
   },
   mounted() {
     this.editCoupon = this.tempCoupon;
+    // this.showDate();
   },
+  // methods: {
+  //   // 顯示時間
+  //   showDate() {
+  //     const getTime = new Date().toISOString().slice(0, 10);
+  //     this.due_date = getTime;
+  //     console.log(this.due_date);
+  //   },
+  // },
   watch: {
     tempCoupen() {
       this.editCoupon = this.tempCoupon;
+      const getTime = new Date(this.editCoupon.data.due_date * 1000).toISOString().split('T');
+      [this.due_date] = getTime;
+    },
+    due_date() {
+      this.editCoupon.data.due_date = Math.floor(new Date(this.due_date) / 1000);
     },
   },
 };
