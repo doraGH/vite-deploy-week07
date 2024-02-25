@@ -54,9 +54,8 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-            取消
-          </button>
-          <button type="button" class="btn btn-primary" @click="$emit('update-coupon', tempCoupon)">
+            取消</button>
+          <button type="button" class="btn btn-primary" @click="$emit('update-coupon', editCoupon)">
           {{ isNew ? '新增優惠卷' :'更新優惠券' }}
           </button>
         </div>
@@ -68,9 +67,6 @@
 <script>
 import modalMixin from '@/mixins/modalMixin';
 
-// import Swal from 'sweetalert2';
-// const { VITE_URL, VITE_PATH } = import.meta.env;
-
 export default {
   props: ['isNew', 'tempCoupon'],
   emits: ['update-coupon'],
@@ -81,27 +77,45 @@ export default {
       editCoupon: {
         data: {},
       },
-      due_date: '',
+      due_date: '', // 保存日期
     };
   },
   mounted() {
     this.editCoupon = this.tempCoupon;
-    // this.showDate();
+    this.setDueDate();
   },
-  // methods: {
-  //   // 顯示時間
-  //   showDate() {
-  //     const getTime = new Date().toISOString().slice(0, 10);
-  //     this.due_date = getTime;
-  //     console.log(this.due_date);
-  //   },
-  // },
+  methods: {
+    setDueDate() {
+      if (this.isNew === true) {
+        this.due_date = this.getCurrentDate();
+      } else {
+        // 將 Unix 時間戳轉換為 Date 物件
+        const dueDate = new Date(this.tempCoupon.data.due_date * 1000);
+        // 格式化日期為年月日格式
+        const year = dueDate.getFullYear();
+        const month = String(dueDate.getMonth() + 1).padStart(2, '0');
+        const day = String(dueDate.getDate()).padStart(2, '0');
+        // 設置到期日欄位值
+        this.due_date = `${year}-${month}-${day}`;
+      }
+    },
+    getCurrentDate() {
+      const today = new Date(); // 當前時間戳記日期
+      const year = today.getFullYear(); // 年份
+      const month = String(today.getMonth() + 1).padStart(2, '0'); // 月份
+      const day = String(today.getDate()).padStart(2, '0'); // 日期
+      return `${year}-${month}-${day}`; // 返回格式化日期字符串
+    },
+  },
   watch: {
+    // 處理父層資料
     tempCoupen() {
-      this.editCoupon = this.tempCoupon;
+      this.editCoupon.data = { ...this.tempCoupon };
       const getTime = new Date(this.editCoupon.data.due_date * 1000).toISOString().split('T');
       [this.due_date] = getTime;
+      // ESLint 的慣例中括號,這是一種陣列解構賦值的方法,表示將 getTime 陣列的第一個元素賦值給 this.due_date
     },
+    // 將輸入的時間轉換格式
     due_date() {
       this.editCoupon.data.due_date = Math.floor(new Date(this.due_date) / 1000);
     },

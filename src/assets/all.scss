@@ -24,3 +24,10 @@
 .active {
   color: rgb(194, 75, 75)!important;
 }
+
+.Toastify__toast-container {
+  width: 240px;
+}
+.Toastify__toast-body {
+  align-items: flex-start;
+}

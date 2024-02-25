@@ -1,8 +1,8 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 
-import axios from 'axios';
 import VueAxios from 'vue-axios';
+import axios from 'axios';
 
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/css/index.css';
@@ -19,9 +19,12 @@ import { localize, setLocale } from '@vee-validate/i18n';
 import zhTW from '@vee-validate/i18n/dist/locale/zh_TW.json';
 
 import 'bootstrap';
-import './assets/all.scss';
+import Vue3Toasity, { toast } from 'vue3-toastify';
 import router from './router';
 import App from './App.vue';
+
+import 'vue3-toastify/dist/index.css';
+import './assets/all.scss';
 
 library.add(faSpinner, faEye);
 
@@ -47,5 +50,16 @@ app.component('ErrorMessage', ErrorMessage);
 app.use(VueAxios, axios);
 app.use(createPinia());
 app.use(router);
+
+// 吐司套件
+app.use(Vue3Toasity, {
+  autoClose: 2000, // 自動關閉時間
+  position: toast.POSITION.TOP_RIGHT, // 提示窗位置
+  toastStyle: {
+    fontSize: '12px',
+    minHeight: '50px',
+    marginBottom: '0.5rem',
+  },
+});
 
 app.mount('#app');

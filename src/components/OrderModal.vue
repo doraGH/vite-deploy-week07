@@ -124,7 +124,8 @@
 
 <script>
 import modalMixin from '@/mixins/modalMixin';
-import Swal from 'sweetalert2';
+// import Swal from 'sweetalert2';
+import { toast } from 'vue3-toastify';
 
 const { VITE_URL, VITE_PATH } = import.meta.env;
 
@@ -144,13 +145,13 @@ export default {
     this.editOrder = this.tempOrder; // 傳參考
   },
   methods: {
-    // 修改訂單-待修
+    // 修改訂單
     updateOrder() {
       const orderId = this.editOrder.data.id;
       const url = `${VITE_URL}/api/${VITE_PATH}/admin/order/${orderId}`;
       this.axios
         .put(url, this.editOrder).then((response) => {
-          Swal.fire(response.data.message);
+          toast.success(response.data.message);
           this.modal.hide();
           this.$emit('updateOrder');
         })
@@ -158,7 +159,7 @@ export default {
           const errorMessage = Array.isArray(error.response.data.message)
             ? error.response.data.message.join('\n')
             : error.response.data.message;
-          Swal.fire(errorMessage);
+          toast.error(errorMessage);
         });
     },
     // 組合時間

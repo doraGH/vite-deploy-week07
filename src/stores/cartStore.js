@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import Swal from 'sweetalert2';
+import { toast } from 'vue3-toastify';
 
 const { VITE_URL, VITE_PATH } = import.meta.env;
 
@@ -31,10 +31,10 @@ export default defineStore('cartStore', {
           // this.$refs.modal.hideModal();
           this.status.loadCart = '';
           this.getCarts();
-          Swal.fire(response.data.message);
+          toast.success(response.data.message);
         })
         .catch((error) => {
-          Swal.fire(error.response.data.message);
+          toast.error(error.response.data.message);
         });
     },
     // 取得購物車
@@ -59,26 +59,35 @@ export default defineStore('cartStore', {
       axios
         .delete(url)
         .then((response) => {
-          Swal.fire(response.data.message);
+          toast.success(response.data.message);
           this.status.loadQty = '';
           this.getCarts();
         })
         .catch((error) => {
-          Swal.fire(error.response.data.message);
+          toast.error(error.response.data.message);
         });
     },
     // 刪除全部購物車
     deleteAllCarts() {
       const url = `${VITE_URL}/api/${VITE_PATH}/carts`;
-      axios
-        .delete(url)
-        .then((response) => {
-          this.getCarts();
-          Swal.fire(response.data.message);
-        })
-        .catch((error) => {
-          Swal.fire(error.response.data.message);
-        });
+      Swal.fire({
+        title: '確定要刪除全部購物車嗎?',
+        showDenyButton: true,
+        confirmButtonText: '是，我要刪除',
+        denyButtonText: '不要刪除',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          axios
+            .delete(url)
+            .then((response) => {
+              this.getCarts();
+              Swal.fire(response.data.message);
+            })
+            .catch((error) => {
+              toast.error(error.response.data.message);
+            });
+        }
+      });
     },
     // 更新購物車
     updateCart(data) {
@@ -92,8 +101,8 @@ export default defineStore('cartStore', {
       this.status.loadQty = data.id;
       axios
         .put(url, cart)
-        .then((response) => {
-          Swal.fire(response.data.message);
+        .then(() => {
+          // Swal.fire(response.data.message);
           this.status.loadQty = '';
           this.getCarts();
         })

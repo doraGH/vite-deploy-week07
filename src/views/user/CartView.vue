@@ -9,7 +9,7 @@
           <button class="btn btn-outline-danger"
           type="button"
           :class="{'disabled': cartList.carts.length === 0}"
-          @click="fetchDeleteAllCarts">清空購物車</button>
+          @click="deleteAllCarts">清空購物車</button>
         </div>
         <div v-if="cartList.carts && cartList.carts.length > 0" class="bg-light my-4 p-4">
           <table class="table align-middle">
@@ -40,6 +40,15 @@
                 </td>
                 <td>
                   <div class="input-group input-group-sm">
+                    <div class="input-group mb-3">
+                      <input min="1" type="number" class="form-control" v-model.number="item.qty"
+                        @blur="updateCart(item)">
+                      <span class="input-group-text" id="basic-addon2">
+                        {{ item.product.unit }}</span>
+                    </div>
+                  </div>
+
+                  <!-- <div class="input-group input-group-sm">
                     <div class="input-group mb-3">
                       <button type="button"
                         class="btn btn-outline-primary btn-sm"
@@ -74,7 +83,7 @@
                       </button>
 
                     </div>
-                  </div>
+                  </div> -->
                 </td>
                 <td class="text-end">
                   {{ item.final_total }}
@@ -186,16 +195,6 @@ export default {
       'removeCartItem',
       'updateCart',
     ]),
-
-    fetchDeleteAllCarts() {
-      this.deleteAllCarts();
-    },
-    fetchRemoveCartItem(cartId) {
-      this.removeCartItem(cartId);
-    },
-    fetchUpdateCart(item) {
-      this.updateCart(item);
-    },
 
     // 驗證手機
     isPhone(value) {

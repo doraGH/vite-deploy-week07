@@ -66,6 +66,7 @@
 
 <script>
 import Swal from 'sweetalert2';
+import { toast } from 'vue3-toastify';
 
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import OrderModal from '@/components/OrderModal.vue';
@@ -101,10 +102,10 @@ export default {
           this.isLoading = false;
           this.orders = orders;
           this.pagination = pagination;
+          toast.success('成功取得訂單');
         })
         .catch((error) => {
-          Swal.fire(error.response.data.message);
-          this.$router.push('/login');
+          toast.error(error.response.data.message);
         });
     },
     // 組合時間
@@ -122,22 +123,33 @@ export default {
         .delete(url, orderId).then(() => {
           this.$refs.delModal.hideModal();
           this.getOrders();
+          toast.success('成功取消一筆訂單');
         })
         .catch((error) => {
-          Swal.fire(error.response.data.message);
+          toast.error(error.response.data.message);
         });
     },
     // 取消全部訂單
     delAllOrder() {
       const url = `${VITE_URL}/api/${VITE_PATH}/admin/orders/all`;
-      this.axios
-        .delete(url).then((response) => {
-          Swal.fire(response.data.message);
-          this.getOrders();
-        })
-        .catch((error) => {
-          Swal.fire(error.response.data.message);
-        });
+      Swal.fire({
+        title: '確定要刪除全部訂單嗎?',
+        showDenyButton: true,
+        confirmButtonText: '是，我要刪除',
+        denyButtonText: '不要刪除',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.axios
+            .delete(url).then((response) => {
+              toast.success(response.data.message);
+              this.getOrders();
+              Swal.fire('您已刪除全部訂單');
+            })
+            .catch((error) => {
+              toast.error(error.response.data.message);
+            });
+        }
+      });
     },
     // open bs modal 代值判斷傳入是哪一個
     openOrderModal(status, item) {
@@ -151,9 +163,6 @@ export default {
     },
   },
   mounted() {
-    // 取得cookie token
-    const token = document.cookie.replace(/(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
-    this.axios.defaults.headers.common.Authorization = token;
     this.getOrders();
   },
 };

@@ -155,6 +155,7 @@
 <script>
 import modalMixin from '@/mixins/modalMixin';
 import Swal from 'sweetalert2';
+import { toast } from 'vue3-toastify';
 
 const { VITE_URL, VITE_PATH } = import.meta.env;
 
@@ -165,6 +166,14 @@ export default {
     return {
       editProduct: {
         data: {},
+      },
+      // 表單欄位對應表
+      fieldTranslation: {
+        title: '標題',
+        category: '分類',
+        unit: '單位',
+        origin_price: '原價',
+        price: '價格',
       },
     };
   },
@@ -190,14 +199,17 @@ export default {
 
       this.axios[http](url, this.editProduct)
         .then((response) => {
-          Swal.fire(response.data.message);
+          toast.success(response.data.message);
           this.modal.hide();
           this.$emit('updateProduct');
         })
         .catch((error) => {
-          const errorMessage = Array.isArray(error.response.data.message)
+          let errorMessage = Array.isArray(error.response.data.message)
             ? error.response.data.message.join('\n')
             : error.response.data.message;
+
+          // 使用對應表轉換錯誤訊息中的欄位名稱
+          errorMessage = errorMessage.replace(/(\w+) 欄位/g, (match, p1) => `${this.fieldTranslation[p1] || p1} 欄位`);
           Swal.fire(errorMessage);
         });
     },
@@ -219,7 +231,7 @@ export default {
           });
         })
         .catch((error) => {
-          Swal.fire(error.response.data.message.message);
+          toast.error(error.response.data.message.message);
         });
     },
 
