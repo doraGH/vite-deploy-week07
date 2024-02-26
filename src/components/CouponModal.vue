@@ -109,12 +109,17 @@ export default {
   },
   watch: {
     // 處理父層資料
-    tempCoupen() {
-      this.editCoupon.data = { ...this.tempCoupon };
-      const getTime = new Date(this.editCoupon.data.due_date * 1000).toISOString().split('T');
-      [this.due_date] = getTime;
-      // ESLint 的慣例中括號,這是一種陣列解構賦值的方法,表示將 getTime 陣列的第一個元素賦值給 this.due_date
+    tempCoupon: {
+      handler() {
+        this.editCoupon = this.tempCoupon;
+        const getTime = new Date(this.editCoupon.data.due_date * 1000).toISOString().split('T');
+        [this.due_date] = getTime;
+        // ESLint 的慣例中括號,這是一種陣列解構賦值的方法,表示將 getTime 陣列的第一個元素賦值給 this.due_date
+      },
+      deep: true,
+      // 表示對tempCoupon物件進行深度監聽，即使是物件內部的巢狀屬性發生變化，也會觸發handler函數
     },
+
     // 將輸入的時間轉換格式
     due_date() {
       this.editCoupon.data.due_date = Math.floor(new Date(this.due_date) / 1000);

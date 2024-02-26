@@ -234,7 +234,6 @@ export default {
           toast.error(error.response.data.message.message);
         });
     },
-
   },
   watch: {
     tempProduct() {
