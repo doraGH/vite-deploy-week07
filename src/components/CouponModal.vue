@@ -108,7 +108,7 @@ export default {
     },
   },
   watch: {
-    // 處理父層資料
+    // 處理父層日期資料
     tempCoupon: {
       handler() {
         this.editCoupon = this.tempCoupon;

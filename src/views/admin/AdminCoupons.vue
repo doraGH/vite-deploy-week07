@@ -137,14 +137,10 @@ export default {
       this.isLoading = true;
       let url = `${VITE_URL}/api/${VITE_PATH}/admin/coupon`;
       let http = 'post';
-      // let data = item;
-      // console.log(data);
       // 不是isNew
       if (!this.isNew) {
         url += `/${item.id}`;
         http = 'put';
-        // data = this.tempCoupon;
-        // console.log(data);
       }
 
       this.axios[http](url, item)
@@ -153,7 +149,6 @@ export default {
           toast.success(response.data.message);
           this.getCoupons();
           this.$refs.couponModal.hideModal();
-          // console.log(response);
         })
         .catch((error) => {
           this.isLoading = false;
@@ -164,7 +159,6 @@ export default {
           // 使用對應表轉換錯誤訊息中的欄位名稱
           errorMessage = errorMessage.replace(/(\w+) 欄位/g, (match, p1) => `${this.fieldTranslation[p1] || p1} 欄位`);
           toast.error(errorMessage);
-          // console.log(error);
         });
     },
     // 刪除優惠券

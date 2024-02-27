@@ -43,25 +43,25 @@
     <PaginationComponent :pages="pagination" @change-page="getArticles"></PaginationComponent>
   </div>
   <!-- 新增視窗 -->
-  <!-- <ArticleModal
+  <ArticleModal
     ref="articleModal"
     :is-new="isNew"
     :temp-article="tempArticle"
     @update-article="updateArticle">
-  </ArticleModal> -->
+  </ArticleModal>
 
   <!-- Modal 刪除視窗 -->
-  <!-- <DelModal
+  <DelModal
     ref="delModal"
-    :item="tempCoupon"
-    @del-item="delArticle"></DelModal> -->
+    :item="tempArticle"
+    @del-item="delArticle"></DelModal>
 </template>
 
 <script>
 import { toast } from 'vue3-toastify';
 
 import PaginationComponent from '@/components/PaginationComponent.vue';
-import ArticleModal from '@/components/CouponModal.vue';
+import ArticleModal from '@/components/ArticleModal.vue';
 import DelModal from '@/components/DelModal.vue';
 
 const { VITE_URL, VITE_PATH } = import.meta.env;
@@ -81,23 +81,37 @@ export default {
       },
       isNew: true,
       isLoading: false,
+      // 表單欄位對應表
+      fieldTranslation: {
+        title: '標題',
+        create_at: '日期',
+        author: '作者',
+        isPublic: '是否公開',
+        content: '內容',
+      },
     };
   },
   methods: {
     // open bs modal
-    // openArticleModal(status, item) {
-    //   if (status === 'createNew') {
-    //     this.isNew = true;
-    //     this.$refs.articleModal.openModal();
-    //   } else if (status === 'edit') {
-    //     this.isNew = false;
-    //     this.tempArticle.data = { ...item };
-    //     this.$refs.articleModal.openModal();
-    //   } else if (status === 'delete') {
-    //     this.tempArticle.data = { ...item };
-    //     this.$refs.delModal.openModal();
-    //   }
-    // },
+    openArticleModal(status, item) {
+      if (status === 'createNew') {
+        this.isNew = true;
+        this.tempArticle.data = {
+          create_at: Math.floor(new Date().getTime() / 1000),
+          isPublic: false,
+        };
+        this.$refs.articleModal.openModal();
+        console.log(item);
+      } else if (status === 'edit') {
+        this.isNew = false;
+        this.tempArticle.data = { ...item };
+        this.$refs.articleModal.openModal();
+        console.log(item);
+      } else if (status === 'delete') {
+        this.tempArticle.data = { ...item };
+        this.$refs.delModal.openModal();
+      }
+    },
     // 組合時間
     formatDate(timestamp) {
       const getTime = new Date(timestamp * 1000);
@@ -109,15 +123,58 @@ export default {
       const url = `${VITE_URL}/api/${VITE_PATH}/admin/articles?page=${page}`;
       this.axios.get(url)
         .then((response) => {
-          console.log(response);
+          // console.log(response);
           const { articles, pagination } = response.data;
           this.articles = articles;
           this.pagination = pagination;
           this.isLoading = false;
           toast.success('成功取得文章');
+          console.log(articles);
         })
         .catch((error) => {
           this.isLoading = false;
+          toast.error(error.response.data.message);
+        });
+    },
+    // 更新
+    updateArticle(item) {
+      this.isLoading = true;
+      let url = `${VITE_URL}/api/${VITE_PATH}/admin/article`;
+      let http = 'post';
+      // 不是isNew=新的
+      if (!this.isNew) {
+        url += `/${item.id}`;
+        http = 'put';
+      }
+
+      this.axios[http](url, item)
+        .then((response) => {
+          this.isLoading = false;
+          toast.success(response.data.message);
+          this.getArticles();
+          this.$refs.articleModal.hideModal();
+        })
+        .catch((error) => {
+          this.isLoading = false;
+          let errorMessage = Array.isArray(error.response.data.message)
+            ? error.response.data.message.join('\n')
+            : error.response.data.message;
+
+          // 使用對應表轉換錯誤訊息中的欄位名稱
+          errorMessage = errorMessage.replace(/(\w+) 欄位/g, (match, p1) => `${this.fieldTranslation[p1] || p1} 欄位`);
+          toast.error(errorMessage);
+        });
+    },
+    // 刪除單一貼文
+    delArticle() {
+      const url = `${VITE_URL}/api/${VITE_PATH}/admin/article/${this.tempArticle.data.id}`;
+      this.axios.delete(url)
+        .then((response) => {
+          this.$refs.delModal.hideModal();
+          this.getArticles();
+          toast.success(response.data.message);
+        })
+        .catch((error) => {
           toast.error(error.response.data.message);
         });
     },
