@@ -2,10 +2,11 @@
   <VueLoading :active="isLoading" />
   <div class="container">
     <div class="d-flex justify-content-between mt-4">
-      <h2>文章列表</h2>
+      <h2>文章管理</h2>
       <button class="btn btn-primary" @click="openArticleModal('createNew')">
-        建立新的文章
+        建立文章
       </button>
+      <!-- <RouterLink to="/admin/article/new" class="btn btn-dark">建立文章</RouterLink> -->
     </div>
     <table class="table mt-4">
       <thead>
@@ -84,9 +85,7 @@ export default {
       // 表單欄位對應表
       fieldTranslation: {
         title: '標題',
-        create_at: '日期',
         author: '作者',
-        isPublic: '是否公開',
         content: '內容',
       },
     };

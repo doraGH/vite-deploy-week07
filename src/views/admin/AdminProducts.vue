@@ -35,7 +35,7 @@
                 編輯
               </button>
               <button type="button" class="btn btn-outline-danger btn-sm"
-              @click.prevent="openProductModal('delete', item)">
+              @click.prevent="deleteProduct(item)">
                 刪除
               </button>
             </div>
@@ -57,19 +57,19 @@
   </ProductModal>
 
   <!-- Modal 刪除彈跳視窗 -->
-  <DelModal
+  <!-- <DelModal
   ref="delModal"
   :item="tempProduct"
-  @del-item="deleteProduct"></DelModal>
+  @del-item="deleteProduct"></DelModal> -->
 </template>
 
 <script>
-// import Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 import { toast } from 'vue3-toastify';
 
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import ProductModal from '@/components/ProductModal.vue';
-import DelModal from '@/components/DelModal.vue';
+// import DelModal from '@/components/DelModal.vue';
 
 const { VITE_URL, VITE_PATH } = import.meta.env;
 
@@ -88,7 +88,7 @@ export default {
   components: {
     PaginationComponent,
     ProductModal,
-    DelModal,
+    // DelModal,
   },
   methods: {
     // 取得產品
@@ -117,9 +117,6 @@ export default {
         this.isNew = false;
         this.tempProduct.data = { ...item };
         this.openProductModalShow();
-      } else if (status === 'delete') {
-        this.tempProduct.data = { ...item };
-        this.openDelProductModalShow();
       }
     },
     // 接收tempProduct事件
@@ -131,18 +128,27 @@ export default {
     },
 
     // 刪除單一產品
-    deleteProduct() {
-      const url = `${VITE_URL}/api/${VITE_PATH}/admin/product/${this.tempProduct.data.id}`;
-      this.axios
-        .delete(url)
-        .then((response) => {
-          toast.success(response.data.message);
-          this.$refs.delModal.hideModal();
-          this.getProducts();
-        })
-        .catch((error) => {
-          toast.error(error.response.data.message);
-        });
+    deleteProduct(item) {
+      const url = `${VITE_URL}/api/${VITE_PATH}/admin/product/${item.id}`;
+      Swal.fire({
+        title: `確定要刪除<span class="text-danger">${item.title}</span>嗎?`,
+        showDenyButton: true,
+        confirmButtonText: '是，我要刪除',
+        denyButtonText: '不要刪除',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.axios
+            .delete(url)
+            .then((response) => {
+              toast.success(response.data.message);
+              // this.$refs.delModal.hideModal();
+              this.getProducts();
+            })
+            .catch((error) => {
+              toast.error(error.response.data.message);
+            });
+        }
+      });
     },
 
     // bsModal show

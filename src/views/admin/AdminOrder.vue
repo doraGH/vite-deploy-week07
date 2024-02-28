@@ -37,7 +37,7 @@
                 <font-awesome-icon :icon="['fas', 'eye']" /> 修改
                 </button>
                 <button type="button" class="btn btn-outline-danger btn-sm"
-                @click.prevent="openOrderModal('delete', item)">
+                @click.prevent="delOneOrder(item.id)">
                   刪除
                 </button>
               </div>
@@ -58,10 +58,10 @@
   </OrderModal>
 
   <!-- Modal 刪除彈跳視窗 -->
-  <DelModal
+  <!-- <DelModal
   ref="delModal"
   :item="tempOrder"
-  @del-item="delOneOrder"></DelModal>
+  @del-item="delOneOrder"></DelModal> -->
 </template>
 
 <script>
@@ -70,7 +70,7 @@ import { toast } from 'vue3-toastify';
 
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import OrderModal from '@/components/OrderModal.vue';
-import DelModal from '@/components/DelModal.vue';
+// import DelModal from '@/components/DelModal.vue';
 
 const { VITE_URL, VITE_PATH } = import.meta.env;
 
@@ -88,7 +88,7 @@ export default {
   components: {
     PaginationComponent,
     OrderModal,
-    DelModal,
+    // DelModal,
   },
   methods: {
     // 取得訂單
@@ -116,24 +116,33 @@ export default {
       return getTime.toLocaleDateString();
     },
     // 取消單一訂單
-    delOneOrder() {
-      const orderId = this.tempOrder.data.id;
-      const url = `${VITE_URL}/api/${VITE_PATH}/admin/order/${orderId}`;
-      this.axios
-        .delete(url, orderId).then(() => {
-          this.$refs.delModal.hideModal();
-          this.getOrders();
-          toast.success('成功取消一筆訂單');
-        })
-        .catch((error) => {
-          toast.error(error.response.data.message);
-        });
+    delOneOrder(id) {
+      // const orderId = this.tempOrder.data.id;
+      const url = `${VITE_URL}/api/${VITE_PATH}/admin/order/${id}`;
+      Swal.fire({
+        title: '確定要刪除訂單嗎?',
+        showDenyButton: true,
+        confirmButtonText: '是，我要刪除',
+        denyButtonText: '不要刪除',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.axios
+            .delete(url, id).then((response) => {
+              // this.$refs.delModal.hideModal();
+              toast.success(response.data.message);
+              this.getOrders();
+            })
+            .catch((error) => {
+              toast.error(error.response.data.message);
+            });
+        }
+      });
     },
     // 取消全部訂單
     delAllOrder() {
       const url = `${VITE_URL}/api/${VITE_PATH}/admin/orders/all`;
       Swal.fire({
-        title: '確定要刪除全部訂單嗎?',
+        title: '確定要清空<span class="text-danger">全部</span>訂單嗎?',
         showDenyButton: true,
         confirmButtonText: '是，我要刪除',
         denyButtonText: '不要刪除',

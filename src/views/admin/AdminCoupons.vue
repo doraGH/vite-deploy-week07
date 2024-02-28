@@ -31,7 +31,7 @@
               <button type="button" class="btn btn-outline-primary btn-sm"
                 @click.prevent="openCouponModal('edit', item)">編輯</button>
               <button type="button" class="btn btn-outline-danger btn-sm"
-              @click.prevent="openCouponModal('delete', item)">刪除</button>
+              @click.prevent="delCoupon(item)">刪除</button>
             </div>
           </td>
         </tr>
@@ -56,7 +56,7 @@
 </template>
 
 <script>
-// import Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 import { toast } from 'vue3-toastify';
 
 import PaginationComponent from '@/components/PaginationComponent.vue';
@@ -162,17 +162,26 @@ export default {
         });
     },
     // 刪除優惠券
-    delCoupon() {
-      const url = `${VITE_URL}/api/${VITE_PATH}/admin/coupon/${this.tempCoupon.data.id}`;
-      this.axios.delete(url)
-        .then((response) => {
-          this.$refs.delModal.hideModal();
-          this.getCoupons();
-          toast.success(response.data.message);
-        })
-        .catch((error) => {
-          toast.error(error.response.data.message);
-        });
+    delCoupon(item) {
+      const url = `${VITE_URL}/api/${VITE_PATH}/admin/coupon/${item.id}`;
+      Swal.fire({
+        title: `確定要刪除<span class="text-danger">${item.title}</span>嗎?`,
+        showDenyButton: true,
+        confirmButtonText: '是，我要刪除',
+        denyButtonText: '不要刪除',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.axios.delete(url)
+            .then((response) => {
+              // this.$refs.delModal.hideModal();
+              this.getCoupons();
+              toast.success(response.data.message);
+            })
+            .catch((error) => {
+              toast.error(error.response.data.message);
+            });
+        }
+      });
     },
     // 獲取當前日期
     getCurrentDate() {

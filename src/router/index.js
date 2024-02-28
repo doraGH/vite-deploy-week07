@@ -46,9 +46,14 @@ const routes = [
         component: () => import('../views/admin/AdminCoupons.vue'),
       },
       {
-        path: 'article',
-        name: '文章列表',
+        path: 'articles',
+        name: '文章管理列表',
         component: () => import('../views/admin/AdminArticle.vue'),
+      },
+      {
+        path: 'article/new',
+        name: '新增文章',
+        component: () => import('../views/admin/AdminArticleView.vue'),
       },
     ],
   },

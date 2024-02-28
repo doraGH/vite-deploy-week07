@@ -16,12 +16,12 @@
           <RouterLink to="/admin/products" class="nav-link">產品</RouterLink>
           <RouterLink to="/admin/orders" class="nav-link">訂單</RouterLink>
           <RouterLink to="/admin/coupons" class="nav-link">優惠券</RouterLink>
-          <RouterLink to="/admin/article" class="nav-link">貼文</RouterLink>
+          <!-- <RouterLink to="/admin/articles" class="nav-link">貼文</RouterLink> -->
           <a href="#" @click.prevent="logout" class="nav-link">登出</a>
         </div>
         <div class="navbar-nav ms-auto">
-          <RouterLink to="/user/articles" class="nav-link">Blog</RouterLink>
-          <RouterLink to="/cart" class="nav-link">購物車</RouterLink>
+          <!-- <RouterLink to="/user/articles" class="nav-link">Blog</RouterLink> -->
+          <!-- <RouterLink to="/cart" class="nav-link">購物車</RouterLink> -->
           <RouterLink to="/" class="nav-link">返回前台</RouterLink>
         </div>
       </div>

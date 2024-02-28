@@ -11,8 +11,8 @@
       <div class="modal-content border-0">
         <div class="modal-header bg-dark text-white">
           <h5 id="articleModalLabel" class="modal-title">
-            <span v-if="isNew">新增貼文</span>
-            <span v-else>編輯貼文</span>
+            <span v-if="isNew">新增文章</span>
+            <span v-else>編輯文章</span>
           </h5>
           <button
             type="button"
@@ -31,12 +31,13 @@
               </div>
               <div class="mb-3">
                 <label for="image" class="form-label">輸入圖片網址</label>
-                <input id="image" type="text" class="form-control" placeholder="請輸入圖片連結"
+                <input id="image" type="text" class="form-control mb-1" placeholder="請輸入圖片連結"
                 v-model="editArticle.data.imageUrl" />
+                <img class="img-fluid" :src="editArticle.data.imageUrl" alt="">
               </div>
               <div class="mb-3">
                 <label for="author" class="form-label">作者</label>
-                <input id="author" type="text" class="form-control" placeholder="請輸入標題"
+                <input id="author" type="text" class="form-control" placeholder="請輸入作者"
                 v-model="editArticle.data.author" />
               </div>
               <div class="mb-3">
@@ -47,40 +48,48 @@
             </div>
             <div class="col-sm-8">
               <label for="tag" class="form-label">標籤</label>
-              <div class="row gx-1 mb-3">
-                <div class="col-md-2 mb-1" v-for="(label, key) in editArticle.tag" :key="key">
+              <input type="text" id="tag"  class="form-control"
+              v-model="newTag" @keyup.enter="addTag">
+              <ul>
+                <li v-for="(tag, index) in tags" :key="index">
+                  {{ tag }}
+                </li>
+              </ul>
+              <!-- <div class="row gx-1 mb-3">
+                <div class="col-md-2 mb-1" v-for="(label, key) in editArticle.data.tag" :key="key">
                   <div class="input-group input-group-sm">
-                    <input type="text" class="form-control form-control" id="tag"
-                      placeholder="請輸入標籤"
-                      v-model="editArticle.data.tag[key]" />
+                    <input type="text" class="form-control form-control"
+                    id="tag" placeholder="請輸入標籤"
+                    v-model="editArticle.data.tag[key]" />
                     <button type="button" class="btn btn-outline-danger"
                     @click="editArticle.data.tag.splice(key, 1)">
                       <i class="bi bi-x"></i>
                     </button>
                   </div>
                 </div>
-                <div class="col-md-2 mb-1">
-                  <!-- v-if="tempArticle.tag[tempArticle.tag.length - 1] ||
-                  !tempArticle.tag.length
-                  " -->
-                  <button class="btn btn-outline-primary btn-sm d-block w-100" type="button">
-                    <!-- @click="tempArticle.tag.push('')" -->
+                <div class="col-md-2 mb-1"
+                v-if="editArticle.data.tag[editArticle.data.tag.length - 1] ||
+                  !editArticle.data.tag.length">
+                  <button class="btn btn-outline-primary btn-sm d-block w-100" type="button"
+                  @click="editArticle.data.tag.push('')">
                     新增標籤
                   </button>
                 </div>
-              </div>
+              </div> -->
               <div class="mb-3">
                 <label for="description" class="form-label">文章描述</label>
                 <textarea type="text" class="form-control" id="description"
                 placeholder="請輸入文章描述" v-model="editArticle.data.description"></textarea>
               </div>
               <div class="mb-3">
-                編輯器
-                <label for="content" class="form-label">編輯器</label>
-                <textarea type="text" class="form-control" id="content"
-                placeholder="請輸入內容" v-model="editArticle.data.content"></textarea>
-                <!-- <ckeditor :editor="editor" :config="editorConfig"
-                v-model="tempArticle.content"></ckeditor> -->
+                編輯器{{ editArticle.data }}
+                <!-- 編輯器-->
+                <!-- <label for="content" class="form-label">編輯器</label> -->
+                <!-- <textarea type="text" class="form-control" id="content"
+                placeholder="請輸入內容" v-model="editArticle.data.content"></textarea> -->
+                <label for="content" class="form-label">文章內容</label>
+                <ckeditor :editor="editor" :config="editorConfig"
+                v-model="editArticle.data.content"></ckeditor>
               </div>
               <div class="mb-3">
                 <div class="form-check">
@@ -110,6 +119,7 @@
 
 <script>
 import modalMixin from '@/mixins/modalMixin';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 export default {
   props: ['isNew', 'tempArticle'],
@@ -117,10 +127,19 @@ export default {
   mixins: [modalMixin],
   data() {
     return {
+      newTag: '',
+      tags: [],
       editArticle: {
-        data: {},
+        data: {
+          tag: [''],
+        },
       },
       create_at: '', // 保存日期
+      // CKEditor 編輯器
+      editor: ClassicEditor,
+      editorConfig: {
+        toolbar: ['heading', 'bold', 'italic', '|', 'link'],
+      },
     };
   },
   mounted() {
@@ -149,6 +168,14 @@ export default {
       const day = String(today.getDate()).padStart(2, '0'); // 日期
       return `${year}-${month}-${day}`; // 返回格式化日期字符串
     },
+    // add tag
+    addTag() {
+      console.log(this.tempArticle.data.tag);
+      if (this.newTag.trim() !== '') {
+        this.tags.push(this.newTag.trim());
+        this.newTag = '';
+      }
+    },
   },
   watch: {
     // 處理父層日期資料
@@ -167,3 +194,9 @@ export default {
   },
 };
 </script>
+
+<style>
+.ck-editor__editable_inline {
+  min-height: 300px;
+}
+</style>
