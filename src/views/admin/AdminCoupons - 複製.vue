@@ -19,8 +19,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(item,key) in coupons" :key="key">
-          <td>{{ item.title }} id: {{ item.id }}</td>
+        <tr v-for="item in coupons" :key="item.id">
+          <td>{{ item.title }}</td>
           <td>{{ item.percent }}%</td>
           <td>{{ formatDate(item.due_date) }}</td>
           <td>
@@ -74,7 +74,7 @@ export default {
       tempCoupon: {
         data: {},
       },
-      isNew: true,
+      isNew: false,
       isLoading: false,
       // 表單欄位對應表
       fieldTranslation: {
@@ -95,7 +95,7 @@ export default {
       if (status === 'createNew') {
         this.isNew = true;
         this.tempCoupon.data = {
-          // 預設取得當天日期、預設不啟用
+          // due_date: Math.floor(new Date(this.due_date) / 1000),
           due_date: Math.floor(new Date().getTime() / 1000),
           is_enabled: 0,
         };
@@ -138,16 +138,13 @@ export default {
       this.isLoading = true;
       let url = `${VITE_URL}/api/${VITE_PATH}/admin/coupon`;
       let http = 'post';
-      let data = item;
-
-      // 如果不是新的優惠券，則使用PUT請求並包含優惠券ID
+      // 不是isNew
       if (!this.isNew) {
-        url = `${VITE_URL}/api/${VITE_PATH}/admin/coupon/${this.tempCoupon.data.id}`;
+        url += `/${item.id}`;
         http = 'put';
-        data = this.tempCoupon;
       }
 
-      this.axios[http](url, data)
+      this.axios[http](url, item)
         .then((response) => {
           this.isLoading = false;
           toast.success(response.data.message);

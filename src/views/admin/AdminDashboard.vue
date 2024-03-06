@@ -37,7 +37,10 @@ export default {
   },
   mounted() {
     // 取得暫存在cookie的 Token
-    const token = document.cookie.replace(/(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+    const token = document.cookie.replace(
+      /(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/,
+      '$1',
+    );
     this.axios.defaults.headers.common.Authorization = token;
 
     // 確認是否登入狀態
