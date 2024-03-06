@@ -223,8 +223,8 @@ export default {
       this.axios
         .post(`${VITE_URL}/api/${VITE_PATH}/admin/upload`, formData)
         .then((response) => {
-          // console.log(response.data.imageUrl);
-
+          // 清除文件輸入的值
+          this.$refs.fileInput.value = '';
           // 使用 $emit 發送修改後的值到外部
           this.$emit('update-temp-product', {
             imageUrl: response.data.imageUrl,

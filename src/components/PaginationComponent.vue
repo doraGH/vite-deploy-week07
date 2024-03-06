@@ -35,3 +35,9 @@ export default {
   },
 };
 </script>
+
+<style>
+.page-link {
+  cursor: pointer;
+}
+</style>

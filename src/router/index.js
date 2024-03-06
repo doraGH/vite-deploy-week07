@@ -59,7 +59,7 @@ const routes = [
   },
   // 404 頁面
   {
-    path: '/admin/:pathMatch(.*)*',
+    path: '/:pathMatch(.*)*',
     component: () => import('../views/NotFound.vue'),
   },
 ];

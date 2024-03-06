@@ -3,7 +3,8 @@
   <div class="container">
     <div class="d-flex justify-content-between mt-4">
       <h2>優惠卷列表</h2>
-      <button class="btn btn-primary" @click="openCouponModal('createNew')">
+      <button class="btn btn-primary" type="button"
+      @click="openCouponModal('createNew')">
         建立新的優惠卷
       </button>
     </div>
@@ -73,7 +74,7 @@ export default {
       tempCoupon: {
         data: {},
       },
-      isNew: true,
+      isNew: false,
       isLoading: false,
       // 表單欄位對應表
       fieldTranslation: {
