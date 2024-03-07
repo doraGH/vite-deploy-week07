@@ -1,0 +1,1 @@
+import{M as o}from"./PaginationComponent-bisSQ6Ks.js";const d={methods:{openModal(){this.modal.show()},hideModal(){this.modal.hide()}},mounted(){this.modal=new o(this.$refs.modal,{backdrop:"static",keyboard:!1})}};export{d as m};
