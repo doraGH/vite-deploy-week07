@@ -100,12 +100,10 @@ export default {
           isPublic: false,
         };
         this.$refs.articleModal.openModal();
-        console.log(item);
       } else if (status === 'edit') {
         this.isNew = false;
         this.tempArticle.data = { ...item };
         this.$refs.articleModal.openModal();
-        console.log(item);
       } else if (status === 'delete') {
         this.tempArticle.data = { ...item };
         this.$refs.delModal.openModal();
@@ -128,7 +126,6 @@ export default {
           this.pagination = pagination;
           this.isLoading = false;
           toast.success('成功取得文章');
-          console.log(articles);
         })
         .catch((error) => {
           this.isLoading = false;
@@ -140,13 +137,16 @@ export default {
       this.isLoading = true;
       let url = `${VITE_URL}/api/${VITE_PATH}/admin/article`;
       let http = 'post';
-      // 不是isNew=新的
+      let data = item;
+
+      // 如果不是新的，則使用PUT請求並包含ID
       if (!this.isNew) {
         url += `/${item.id}`;
         http = 'put';
+        data = this.tempArticle;
       }
 
-      this.axios[http](url, item)
+      this.axios[http](url, data)
         .then((response) => {
           this.isLoading = false;
           toast.success(response.data.message);

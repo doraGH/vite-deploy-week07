@@ -32,8 +32,8 @@
               <div class="mb-3">
                 <label for="image" class="form-label">輸入圖片網址</label>
                 <input id="image" type="text" class="form-control mb-1" placeholder="請輸入圖片連結"
-                v-model="editArticle.data.imageUrl" />
-                <img class="img-fluid" :src="editArticle.data.imageUrl" alt="">
+                v-model="editArticle.data.image" />
+                <img class="img-fluid" :src="editArticle.data.image" alt="">
               </div>
               <div class="mb-3">
                 <label for="author" class="form-label">作者</label>
@@ -55,6 +55,7 @@
                   {{ tag }}
                 </li>
               </ul>
+
               <!-- <div class="row gx-1 mb-3">
                 <div class="col-md-2 mb-1" v-for="(label, key) in editArticle.data.tag" :key="key">
                   <div class="input-group input-group-sm">
@@ -76,6 +77,7 @@
                   </button>
                 </div>
               </div> -->
+
               <div class="mb-3">
                 <label for="description" class="form-label">文章描述</label>
                 <textarea type="text" class="form-control" id="description"
